@@ -1,1 +1,0 @@
-{include file="parent.tpl"} {include file="child.tpl"} {include file="parent.tpl"}

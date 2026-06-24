@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests for templateExists method
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for templateExists tests
  *
- *
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class TemplateExistsTest extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class TemplateExistsTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test $smarty->templateExists true
      */

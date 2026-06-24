@@ -5,9 +5,9 @@ namespace UnitTests\TemplateSource\TagTests\PluginModifier;
 /**
  * class for modifier tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class PluginModifierExplodeTest extends \PHPUnit_Smarty
 {
@@ -18,7 +18,9 @@ class PluginModifierExplodeTest extends \PHPUnit_Smarty
     }
 
     /**
-     * @deprecated
+     * @return void
+     * @throws \SmartyException
+     *
      * @dataProvider explodeDataProvider
      */
     public function testExplode($template, $subject, $expectedString)

@@ -2,23 +2,30 @@
 /**
  * Smarty PHPunit tests compilation of function plugins
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for function plugin tests
  *
- *
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CompileFunctionPluginTest extends PHPUnit_Smarty
 {
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addPluginsDir("../../../__shared/PHPunitplugins/");
     }
+
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
+
 
     /**
      * test function plugin tag in compiled template file
@@ -35,7 +42,7 @@ class CompileFunctionPluginTest extends PHPUnit_Smarty
      */
     public function testFunctionPluginRegisteredFunction()
     {
-        $this->smarty->registerPlugin(\Smarty\Smarty::PLUGIN_FUNCTION, 'plugintest', 'myplugintest');
+        $this->smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'plugintest', 'myplugintest');
         $tpl = $this->smarty->createTemplate('string:{plugintest foo=bar}', $this->smarty);
         $this->assertEquals("plugin test called bar", $this->smarty->fetch($tpl));
     }

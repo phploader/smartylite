@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests - issue #549 regression tests
  *
-
+ * @package PHPunit
  * @author  Andrey Repin <anrdaemon@yandex.ru>
  */
 
 /**
  * class for compiler tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- * 
+ * @backupStaticAttributes enabled
  *
  * mb_split breaks if Smarty encoding is not the same as mbstring regex encoding.
  */
@@ -30,13 +30,18 @@ class MbSplitEncodingIssue549Test extends PHPUnit_Smarty
 
 	public function setUp(): void
     {
-        $this->charset = \Smarty\Smarty::$_CHARSET;
+        if(!\Smarty::$_MBSTRING)
+        {
+            $this->markTestSkipped("mbstring extension is not in use by Smarty");
+        }
+
+        $this->charset = \Smarty::$_CHARSET;
         $this->setUpSmarty(__DIR__);
     }
 
     protected function tearDown(): void
     {
-        \Smarty\Smarty::$_CHARSET = $this->charset ?: \Smarty\Smarty::$_CHARSET;
+        \Smarty::$_CHARSET = $this->charset ?: \Smarty::$_CHARSET;
         $this->cleanDirs();
     }
 
@@ -65,7 +70,7 @@ class MbSplitEncodingIssue549Test extends PHPUnit_Smarty
         \extract($data, \EXTR_SKIP);
 
         \mb_regex_encoding($mb_regex_encoding);
-        \Smarty\Smarty::$_CHARSET = $mb_int_encoding;
+        \Smarty::$_CHARSET = $mb_int_encoding;
         $this->assertEquals($result, $this->smarty->fetch("string:{\"$subject\"|replace:\"$pattern\":\"$replacement\"}"));
     }
 

@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests undefined Smarty special variable
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for undefined Smarty special variable tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class SmartyErrorTest extends PHPUnit_Smarty
 {
@@ -20,12 +20,16 @@ class SmartyErrorTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test undefined Smarty special variable
      */
     public function testSmartyError() {
-        $this->expectException(\Smarty\Exception::class);
+        $this->expectException('SmartyException');
         $this->expectExceptionMessage('$smarty.foo is not defined');
-        $this->assertEquals(\Smarty\Smarty::SMARTY_VERSION, $this->smarty->fetch('error.tpl'));
+        $this->assertEquals(Smarty::SMARTY_VERSION, $this->smarty->fetch('error.tpl'));
     }
  }

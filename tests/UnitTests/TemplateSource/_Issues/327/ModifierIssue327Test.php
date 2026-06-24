@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests compiler errors
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for compiler tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- * 
+ * @backupStaticAttributes enabled
  */
 class ModifierIssue327Test extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class ModifierIssue327Test extends PHPUnit_Smarty
         $this->smarty->registerPlugin('modifier', 'substr', 'substr');
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     public function testModifier327()
     {

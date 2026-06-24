@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests of the {config_load} tag
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for config variable tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- * 
+ * @backupStaticAttributes enabled
  */
 class CompileConfigLoadTest extends PHPUnit_Smarty
 {
@@ -23,15 +23,22 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addPluginsDir("../../../__shared/PHPunitplugins/");
+        $this->smarty->addTemplateDir("../../../__shared/templates/");
+        $this->smarty->addTemplateDir("./templates_tmp");
     }
 
     /**
      * empty template_c and cache folders
      */
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      * test {load_config} loading section2
      */
@@ -40,8 +47,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
         $this->assertEquals("Welcome to Smarty! Global Section1 Hello Section2", $this->smarty->fetch('001_section2.tpl'));
     }
     /**
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      * test {load_config} loading section2
      */
@@ -52,8 +59,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     }
 
     /**
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      * test {load_config} loading section2
      */
@@ -63,8 +70,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     }
 
     /**
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      * test {load_config} loading section2 shorttags
      */
@@ -76,8 +83,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     /**
      * test config varibales loading all sections from template
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testConfigVariableAllSectionsTemplate_004()
     {
@@ -88,8 +95,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     /**
      * test config varibales overwrite
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testConfigVariableOverwrite_005()
     {
@@ -97,16 +104,16 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     }
 
     /**
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testConfigVariableOverwrite_006()
     {
         $this->assertEquals("Welcome to Smarty! Overwrite3", $this->smarty->fetch('006_overwrite.tpl'));
     }
     /**
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testConfigVariableOverwrite_0061()
     {
@@ -118,8 +125,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     /**
      * test config varibales overwrite false
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testConfigVariableOverwrite_007()
     {
@@ -130,8 +137,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     /**
      * test config varibales booleanize on
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testConfigVariableBooleanizeOn_008()
     {
@@ -143,8 +150,8 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
     /**
      * test config varibales booleanize off
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testConfigVariableBooleanizeOff_008()
     {
@@ -158,7 +165,7 @@ class CompileConfigLoadTest extends PHPUnit_Smarty
      */
     public function testConfigSyntaxError_009()
     {
-        $this->expectException(\Smarty\CompilerException::class);
+        $this->expectException('SmartyCompilerException');
         $this->expectExceptionMessage('Syntax error in config file');
         $this->smarty->fetch('009_error.tpl');
     }

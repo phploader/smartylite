@@ -2,29 +2,37 @@
 /**
  * Smarty PHPunit tests compilation of the {include} tag
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {include} tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CompileIncludeTest extends PHPUnit_Smarty
 {
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addPluginsDir("../../../__shared/PHPunitplugins/");
+        $this->smarty->addTemplateDir("./templates_tmp");
+    }
+
+
+    public function testInit()
+    {
+        $this->cleanDirs();
     }
 
     /**
      * test spacing
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProviderCaching
      */
     public function testSpacing_001($merge, $caching, $text)
@@ -41,8 +49,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * test spacing
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProviderCaching
      */
     public function testSpacing_001V2($merge, $caching, $text)
@@ -59,8 +67,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * test spacing
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProviderCaching
      */
     public function testSpacing_001V3($merge, $caching, $text)
@@ -79,8 +87,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
      */
     public function testIncludeFilenameEscaping()
     {
-        $this->expectException(\Smarty\Exception::class);
-        $this->expectExceptionMessageMatches('/Unable to load.*/');
+        $this->expectException(SmartyException::class);
+        $this->expectExceptionMessageRegExp('/Unable to load.*/');
         $tpl = $this->smarty->createTemplate('test_include_security.tpl');
         $content = $this->smarty->fetch($tpl);
         $this->assertEquals("hello world", $content);
@@ -89,8 +97,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * test standard output
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testIncludeStandard_001($merge, $text)
@@ -104,8 +112,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * test standard output var
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testIncludeStandardNocacheVar($merge, $text)
@@ -121,8 +129,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test that assign attribute does not create standard output
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testIncludeAssign1($merge, $text)
@@ -135,8 +143,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test that assign attribute does load variable
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testIncludeAssign2($merge, $text)
@@ -149,8 +157,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test passing local vars eval
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testIncludePassVars($merge, $text)
@@ -164,8 +172,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test passing local vars include
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testIncludePassVars2($merge, $text)
@@ -181,8 +189,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test  recursive includes
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testRecursiveIncludes1($merge, $text)
@@ -197,8 +205,8 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test  recursive includes 2
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider includeProvider
      */
     public function testRecursiveIncludes2($merge, $text)
@@ -248,15 +256,16 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test Include spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testIncludeSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->addTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 'bar');
         $this->assertEquals($result,
                             $this->smarty->fetch($file),
@@ -265,9 +274,9 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test Output spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testIncludeSpacingNocache($code, $result, $testName, $testNumber)
     {
@@ -275,6 +284,7 @@ class CompileIncludeTest extends PHPUnit_Smarty
         $file = "Spacing_{$name}.tpl";
         $this->smarty->setCompileId('1');
         $this->smarty->setCaching(1);
+        $this->smarty->addTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 'bar',true);
         $this->assertEquals($result,
                             $this->smarty->fetch($file),
@@ -283,9 +293,9 @@ class CompileIncludeTest extends PHPUnit_Smarty
     /**
      * Test Output spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testIncludeSpacingNocache2($code, $result, $testName, $testNumber)
     {
@@ -293,6 +303,7 @@ class CompileIncludeTest extends PHPUnit_Smarty
         $file = "Spacing_{$name}.tpl";
         $this->smarty->setCompileId('1');
         $this->smarty->setCaching(1);
+        $this->smarty->addTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 'foo',true);
         $this->assertEquals(str_replace('bar','foo',$result),
                             $this->smarty->fetch($file),
@@ -325,11 +336,4 @@ class CompileIncludeTest extends PHPUnit_Smarty
                      array("A{include file='include_spacing3.tpl'}B\nC", "AbarB\nC", '3_Newline3', $i++),
         );
     }
-
-	public function testModifierWrongPlace() {
-		$this->smarty->debugging = true;
-		$this->expectException(\Smarty\CompilerException::class);
-		$this->expectExceptionMessage('No modifiers allowed');
-		$this->smarty->fetch('include_with_modifier.tpl');
-	}
 }

@@ -3,9 +3,13 @@
  * Smarty PHPunit tests of modifier
  */
 
-namespace UnitTests\TemplateSource\TagTests\PluginModifier;
-use PHPUnit_Smarty;
-
+/**
+ * class for modifier tests
+ *
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState    disabled
+ * @backupStaticAttributes enabled
+ */
 class PluginModifierJsonEncodeTest extends PHPUnit_Smarty
 {
 	public function setUp(): void

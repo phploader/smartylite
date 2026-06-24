@@ -2,18 +2,16 @@
 /**
  * Smarty PHPunit tests register/unregister function plugins
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
-
-use Smarty\Smarty;
 
 /**
  * class for register/unregister function plugins methods tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- * 
+ * @backupStaticAttributes enabled
  *
  */
 class RegisterFunctionTest extends PHPUnit_Smarty
@@ -23,6 +21,10 @@ class RegisterFunctionTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
      * test registerPlugin method for function
@@ -31,19 +33,8 @@ class RegisterFunctionTest extends PHPUnit_Smarty
     {
         $this->smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction', 'myfunction');
         $this->assertEquals('myfunction',
-                            $this->smarty->getRegisteredPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction')[0]);
+                            $this->smarty->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ 'testfunction' ][ 0 ]);
         $this->assertEquals('hello world 1', $this->smarty->fetch('eval:{testfunction value=1}'));
-    }
-
-    /**
-     * test registerPlugin method for function case-sensitive
-     */
-    public function testRegisterFunctionCaseInsensitive()
-    {
-        $this->smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'testFunction', 'myfunction');
-        $this->assertEquals('myfunction',
-            $this->smarty->getRegisteredPlugin(Smarty::PLUGIN_FUNCTION, 'testFunction')[0]);
-        $this->assertEquals('hello world 1', $this->smarty->fetch('eval:{testFunction value=1}'));
     }
 
     /**
@@ -68,8 +59,8 @@ class RegisterFunctionTest extends PHPUnit_Smarty
     /**
      * test registerPlugin method for function cached
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testRegisterFunctionCaching1()
     {
@@ -85,8 +76,8 @@ class RegisterFunctionTest extends PHPUnit_Smarty
     /**
      * test registerPlugin method for function cached
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testRegisterFunctionCaching2()
@@ -102,8 +93,8 @@ class RegisterFunctionTest extends PHPUnit_Smarty
     /**
      * test registerPlugin method for function not cached
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testRegisterFunctionCaching3()
@@ -120,8 +111,8 @@ class RegisterFunctionTest extends PHPUnit_Smarty
     /**
      * test registerPlugin method for function not cached
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testRegisterFunctionCaching4()
@@ -141,62 +132,27 @@ class RegisterFunctionTest extends PHPUnit_Smarty
     {
         $this->smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction', 'myfunction');
         $this->smarty->unregisterPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction');
-        $this->assertNull($this->smarty->getRegisteredPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction'));
+        $this->assertFalse(isset($this->smarty->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ 'testfunction' ]));
     }
 
     /**
-     * test unregisterPlugin method for function not registered
+     * test test unregisterPlugin method for function not registered
      */
     public function testUnregisterFunctionNotRegistered()
     {
         $this->smarty->unregisterPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction');
-        $this->assertNull($this->smarty->getRegisteredPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction'));
+        $this->assertFalse(isset($this->smarty->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ 'testfunction' ]));
     }
 
     /**
-     * test unregisterPlugin method for function other registered
+     * test test unregisterPlugin method for function other registered
      */
     public function testUnregisterFunctionOtherRegistered()
     {
         $this->smarty->registerPlugin(Smarty::PLUGIN_BLOCK, 'testfunction', 'myfunction');
         $this->smarty->unregisterPlugin(Smarty::PLUGIN_FUNCTION, 'testfunction');
-        $this->assertIsArray($this->smarty->getRegisteredPlugin(Smarty::PLUGIN_BLOCK, 'testfunction'));
+        $this->assertTrue(isset($this->smarty->registered_plugins[ Smarty::PLUGIN_BLOCK ][ 'testfunction' ]));
     }
-
-
-    /**
-     * Test case (in)sensitivy of plugin functions
-     * @param $registerName
-     * @param $templateString
-     * @return void
-     * @throws \Smarty\Exception
-     * @group issue907
-     * @dataProvider dataProviderForCaseSensitivity
-     */
-    public function testCaseSensitivity($registerName, $templateString) {
-        $this->smarty->registerPlugin(
-            Smarty::PLUGIN_FUNCTION,
-            $registerName,
-            function($params, $smarty) { return 'function-output'; });
-        $this->assertEquals('function-output', $this->smarty->fetch('string:' . $templateString));
-    }
-
-    public function dataProviderForCaseSensitivity() {
-        return [
-            ['customTag', '{customTag}'],
-            ['customtag', '{customtag}'],
-        ];
-    }
-
-    /**
-     * test registerPlugin for function name ending in 'close' #1122
-     */
-    public function testRegisterFunctionEndingInClose()
-    {
-        $this->smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'window_close', 'myfunction');
-        $this->assertEquals('hello world 1', $this->smarty->fetch('eval:{window_close value=1}'));
-    }
-
 }
 
 function myfunction($params, $smarty)

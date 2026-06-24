@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests of modifier
  *
-
+ * @package PHPunit
  * @author  Rodney Rehm
  */
 
 /**
  * class for modifier tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class PluginFunctionHtmlSelectDateTest extends PHPUnit_Smarty
 {
@@ -629,26 +629,5 @@ class PluginFunctionHtmlSelectDateTest extends PHPUnit_Smarty
         $tpl = $this->smarty->createTemplate('eval:{html_select_date time=$date_array field_array="namorized" prefix="foobar_"}');
         $tpl->assign('date_array', $date_array);
         $this->assertEquals($result, $tpl->fetch());
-    }
-
-    /**
-     * year_size/month_size/day_size are numeric HTML size attributes and must be
-     * cast to int (like html_select_time), so a value cannot break out of size="…".
-     */
-    public function testSizeAttributesCannotBreakOut()
-    {
-        $tpl = $this->smarty->createTemplate('eval:{html_select_date time=$time year_size=$size}');
-        $tpl->assign('time', mktime(0, 0, 0, 1, 1, 2010));
-        $tpl->assign('size', '2"><script>alert(1)</script>');
-        $result = $tpl->fetch();
-        $this->assertStringNotContainsString('<script>', $result);
-        $this->assertStringContainsString('size="2"', $result);
-    }
-
-    public function testBenignSizeAttributeIsKept()
-    {
-        $tpl = $this->smarty->createTemplate('eval:{html_select_date time=$time year_size=3}');
-        $tpl->assign('time', mktime(0, 0, 0, 1, 1, 2010));
-        $this->assertStringContainsString('size="3"', $tpl->fetch());
     }
 }

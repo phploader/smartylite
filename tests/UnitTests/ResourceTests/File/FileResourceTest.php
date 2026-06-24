@@ -2,18 +2,16 @@
 /**
  * Smarty PHPunit tests for File resources
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
-
-use Smarty\Exception;
 
 /**
  * class for file resource tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class FileResourceTest extends PHPUnit_Smarty
 {
@@ -23,6 +21,10 @@ class FileResourceTest extends PHPUnit_Smarty
         $this->smarty->enableSecurity();
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     protected function relative($path)
     {
@@ -34,16 +36,16 @@ class FileResourceTest extends PHPUnit_Smarty
     /**
      *
      */
-    public function testGetTemplateResourceName()
+    public function testGetTemplateFilepath()
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
-        $this->assertEquals('helloworld.tpl', $tpl->getSource()->getResourceName());
+        $this->assertEquals($this->normalizePath("./templates/helloworld.tpl"), $tpl->source->filepath);
     }
 
     public function testTemplateFileExists1()
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
-        $this->assertTrue($tpl->getSource()->exists);
+        $this->assertTrue($tpl->source->exists);
     }
 
     public function testTemplateFileExists2()
@@ -54,7 +56,7 @@ class FileResourceTest extends PHPUnit_Smarty
     public function testTemplateFileNotExists1()
     {
         $tpl = $this->smarty->createTemplate('notthere.tpl');
-        $this->assertFalse($tpl->getSource()->exists);
+        $this->assertFalse($tpl->source->exists);
     }
 
     public function testTemplateFileNotExists2()
@@ -67,7 +69,7 @@ class FileResourceTest extends PHPUnit_Smarty
      */
     public function testTemplateFileNotExists3()
     {
-        $this->expectException(\Smarty\Exception::class);
+        $this->expectException('SmartyException');
         $this->expectExceptionMessage('Unable to');
         $this->expectExceptionMessage('notthere.tpl');
         $this->smarty->fetch('notthere.tpl');
@@ -76,20 +78,34 @@ class FileResourceTest extends PHPUnit_Smarty
     public function testGetTemplateTimestamp()
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
-        $this->assertTrue(is_integer($tpl->getSource()->getTimeStamp()));
-        $this->assertEquals(10, strlen($tpl->getSource()->getTimeStamp()));
+        $this->assertTrue(is_integer($tpl->source->getTimeStamp()));
+        $this->assertEquals(10, strlen($tpl->source->getTimeStamp()));
     }
 
     public function testGetTemplateSource()
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
-        $this->assertEquals('hello world', $tpl->getSource()->getContent());
+        $this->assertEquals('hello world', $tpl->source->getContent());
+    }
+
+    public function testUsesCompiler()
+    {
+        $tpl = $this->smarty->createTemplate('helloworld.tpl');
+        $this->assertFalse($tpl->source->handler->uncompiled);
     }
 
     public function testIsEvaluated()
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
-        $this->assertFalse($tpl->getSource()->handler->recompiled);
+        $this->assertFalse($tpl->source->handler->recompiled);
+    }
+
+    public function testGetCompiledFilepath()
+    {
+        $tpl = $this->smarty->createTemplate('helloworld.tpl');
+        $this->assertEquals($this->buildCompiledPath($tpl, false, false, null, 'helloworld.tpl', 'file', $this->smarty->getTemplateDir(0))
+            , $tpl->compiled->filepath
+        );
     }
 
     /**
@@ -99,8 +115,8 @@ class FileResourceTest extends PHPUnit_Smarty
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
         // create dummy compiled file
-        file_put_contents($tpl->getCompiled()->filepath, '<?php ?>');
-        touch($tpl->getCompiled()->filepath, $tpl->getSource()->getTimeStamp());
+        file_put_contents($tpl->compiled->filepath, '<?php ?>');
+        touch($tpl->compiled->filepath, $tpl->source->getTimeStamp());
     }
 
     /**
@@ -109,9 +125,9 @@ class FileResourceTest extends PHPUnit_Smarty
     public function testGetCompiledTimestamp()
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
-        $this->assertTrue(is_integer($tpl->getCompiled()->getTimeStamp()));
-        $this->assertEquals(10, strlen($tpl->getCompiled()->getTimeStamp()));
-        $this->assertEquals($tpl->getCompiled()->getTimeStamp(), $tpl->getSource()->getTimeStamp());
+        $this->assertTrue(is_integer($tpl->compiled->getTimeStamp()));
+        $this->assertEquals(10, strlen($tpl->compiled->getTimeStamp()));
+        $this->assertEquals($tpl->compiled->getTimeStamp(), $tpl->source->getTimeStamp());
     }
 
     public function testMustCompileExisting()
@@ -127,18 +143,18 @@ class FileResourceTest extends PHPUnit_Smarty
         $this->assertTrue($tpl->mustCompile());
     }
 
-	/**
-	 * @group slow
-	 */
-	public function testMustCompileTouchedSource()
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testMustCompileTouchedSourcePrepare()
     {
-	    // touch to prepare next test
-	    sleep(2);
-	    $this->smarty->createTemplate('helloworld.tpl');
-	    touch(__DIR__ . '/templates/helloworld.tpl');
-
-		$this->setUp();
-
+        // touch to prepare next test
+        sleep(2);
+        $tpl = $this->smarty->createTemplate('helloworld.tpl');
+        touch($tpl->source->filepath);
+    }
+        public function testMustCompileTouchedSource()
+    {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
         $this->assertTrue($tpl->mustCompile());
         // clean up for next tests
@@ -149,25 +165,29 @@ class FileResourceTest extends PHPUnit_Smarty
     {
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
         $tpl->compileTemplateSource();
-        $this->assertTrue(file_exists($tpl->getCompiled()->filepath));
+        $this->assertTrue(file_exists($tpl->compiled->filepath));
+    }
+
+    public function testGetCachedFilepath()
+    {
+        $this->smarty->caching = true;
+        $this->smarty->cache_lifetime = 1000;
+        $tpl = $this->smarty->createTemplate('helloworld.tpl');
+        $this->assertEquals($this->buildCachedPath($tpl, false, null, null, 'helloworld.tpl', 'file', $this->smarty->getTemplateDir(0), 'file')
+            , $tpl->cached->filepath
+        );
     }
 
     public function testGetCachedTimestamp()
     {
         // create dummy cache file for the following test
-	    $this->smarty->caching = true;
-	    $this->smarty->cache_lifetime = 1000;
-	    $tpl = $this->smarty->createTemplate('helloworld.tpl');
-		$tpl->fetch();
-		$timestamp = $tpl->getCached()->timestamp;
-
-		$this->setUpSmarty(__DIR__);
-	    $this->smarty->caching = true;
-	    $this->smarty->cache_lifetime = 1000;
-
+        file_put_contents($this->buildCachedPath($this->smarty, false, null, null, 'helloworld.tpl', 'file', $this->smarty->getTemplateDir(0), 'file')
+            , '<?php ?>');
+        $this->smarty->caching = true;
+        $this->smarty->cache_lifetime = 1000;
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
-        $this->assertTrue(is_integer($tpl->getCached()->timestamp));
-        $this->assertEquals($timestamp, $tpl->getCached()->timestamp);
+        $this->assertTrue(is_integer($tpl->cached->timestamp));
+        $this->assertEquals(10, strlen($tpl->cached->timestamp));
     }
 
 
@@ -186,7 +206,7 @@ class FileResourceTest extends PHPUnit_Smarty
     /**
      *
      * @run InSeparateProcess
-     * 
+     * @preserveGlobalState disabled
      *
      */
     public function testRelativeIncludeSub()
@@ -195,23 +215,26 @@ class FileResourceTest extends PHPUnit_Smarty
         $this->assertStringContainsString('hello world', $result);
     }
     /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     *
      * test relative include fail
      */
     public function testRelativeIncludeFail()
     {
-        $this->expectException(\Smarty\Exception::class);
+        $this->expectException('SmartyException');
         $this->expectExceptionMessage('Unable to');
         $this->smarty->fetch('relative_sub.tpl');
     }
     /**
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      * test relative include fail other dir
      */
     public function testRelativeIncludeFailOtherDir()
     {
-        $this->expectException(\Smarty\Exception::class);
+        $this->expectException('SmartyException');
         $this->expectExceptionMessage('./hello.tpl');
         $this->smarty->addTemplateDir('./templates_2');
         $this->smarty->fetch('relative_notexist.tpl');
@@ -219,8 +242,8 @@ class FileResourceTest extends PHPUnit_Smarty
 
     /**
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testRelativeFetch()
@@ -235,8 +258,8 @@ class FileResourceTest extends PHPUnit_Smarty
 
     /**
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testRelativeFetch2()
@@ -251,8 +274,8 @@ class FileResourceTest extends PHPUnit_Smarty
 
     /**
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testRelativeFetchCwd()
@@ -260,8 +283,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         chdir(__DIR__ . '/templates/sub/');
         $dn = __DIR__;
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array(
                                           __DIR__ . '/does-not-exist/',
                                       ));
@@ -272,8 +295,8 @@ class FileResourceTest extends PHPUnit_Smarty
 
     /**
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testRelativeFetchCwd2()
@@ -281,8 +304,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         chdir(__DIR__ . '/templates/sub/');
         $dn = __DIR__;
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array(
                                           __DIR__ . '/does-not-exist/',
                                       ));
@@ -308,7 +331,7 @@ class FileResourceTest extends PHPUnit_Smarty
 
                     return;
                 }
-                catch (Exception $e) {
+                catch (SmartyException $e) {
                     // this was expected to fail
                 }
             } else {
@@ -337,8 +360,8 @@ class FileResourceTest extends PHPUnit_Smarty
 
         $cwd = getcwd();
         $dn = __DIR__;
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array($dn . '/templates/relativity/theory/',));
 
         $map = array('foo.tpl' => 'theory', './foo.tpl' => 'theory', '././foo.tpl' => 'theory',
@@ -356,8 +379,8 @@ class FileResourceTest extends PHPUnit_Smarty
 
         $cwd = getcwd();
         $dn = __DIR__;
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
 
 
         $this->smarty->setTemplateDir(array(
@@ -388,8 +411,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         $dn = __DIR__;
 
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         chdir($dn . '/templates/relativity/theory/');
         $this->smarty->setTemplateDir(array(
                                           $dn . '/templates/',
@@ -417,8 +440,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         $dn = __DIR__;
 
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array($dn . '/templates/relativity/theory/einstein/',));
 
         $map = array('foo.tpl' => 'einstein', './foo.tpl' => 'einstein', '././foo.tpl' => 'einstein',
@@ -437,8 +460,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         $dn = __DIR__;
 
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array(
                                           $dn . '/templates/relativity/theory/einstein/',
                                       ));
@@ -468,8 +491,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         $dn = __DIR__;
 
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array('../..',));
 
         $map = array('foo.tpl' => 'relativity', './foo.tpl' => 'relativity', '././foo.tpl' => 'relativity',);
@@ -486,8 +509,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         $dn = __DIR__;
 
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array('../..',));
 
         $map =
@@ -505,8 +528,8 @@ class FileResourceTest extends PHPUnit_Smarty
         $cwd = getcwd();
         $dn = __DIR__;
 
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array(
                                           '../..',
                                       ));
@@ -538,8 +561,8 @@ class FileResourceTest extends PHPUnit_Smarty
 
         $cwd = getcwd();
         $dn = __DIR__;
-        $this->smarty->setCompileDir(self::getTempBase() . 'templates_c/');
-        $this->smarty->setCacheDir(self::getTempBase() . 'cache/');
+        $this->smarty->setCompileDir($dn . '/templates_c/');
+        $this->smarty->setCacheDir($dn . '/cache/');
         $this->smarty->setTemplateDir(array(
                                           '..',
                                       ));

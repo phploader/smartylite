@@ -2,7 +2,7 @@
 /**
  * Smarty PHPunit tests compilation of {while} tag
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
@@ -10,8 +10,8 @@
  * class for {while} tag tests
  *
  * @not runTestsInSeparateProcess
- * 
- * 
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CompileWhileTest extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class CompileWhileTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test {while 'condition'} tag
      */
@@ -42,15 +46,16 @@ class CompileWhileTest extends PHPUnit_Smarty
     /**
      * Test spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 3);
         $this->assertEquals($result,
                             $this->smarty->fetch($file),
@@ -96,8 +101,8 @@ class CompileWhileTest extends PHPUnit_Smarty
     /**
      * Test  nocache
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestNocache
      */
     public function testNocache($value, $nocache, $code, $result, $testName, $testNumber)
@@ -108,13 +113,14 @@ class CompileWhileTest extends PHPUnit_Smarty
             $this->makeTemplateFile($file, $code);
         }
         $this->smarty->setCaching(1);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', $value, $nocache);
         $this->assertEquals($result, $this->smarty->fetch($file),
                             "{$file} - {$testNumber}");
     }
 
     /*
-      * Data provider for testNocache
+      * Data provider für testNocache
       */
     public function dataTestNocache()
     {

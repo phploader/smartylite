@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests appendByRef method
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for appendByRef tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class LiteralTest extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class LiteralTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /*
      *  Test literal tag
      */

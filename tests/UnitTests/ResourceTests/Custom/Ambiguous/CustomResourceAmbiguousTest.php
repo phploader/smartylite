@@ -2,12 +2,16 @@
 /**
  * Smarty PHPunit tests for File resources
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for file resource tests
+ *
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CustomResourceAmbiguousTest extends PHPUnit_Smarty
 {
@@ -25,6 +29,10 @@ class CustomResourceAmbiguousTest extends PHPUnit_Smarty
         //        Smarty::$_resource_cache = array();
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     protected function relative($path)
     {
@@ -38,59 +46,76 @@ class CustomResourceAmbiguousTest extends PHPUnit_Smarty
 
     public function testNone()
     {
-        $resource_handler = new Smarty_Resource_AmbiguousPlugin(__DIR__ . '/templates/ambiguous/');
+        $resource_handler = new Smarty_Resource_Ambiguous(__DIR__ . '/templates/ambiguous/');
         $this->smarty->registerResource('ambiguous', $resource_handler);
         $this->smarty->setDefaultResourceType('ambiguous');
-//        $this->smarty->setAllowAmbiguousResources(true);
+        $this->smarty->setAllowAmbiguousResources(true);
 
         $tpl = $this->smarty->createTemplate('foobar.tpl');
-        $this->assertFalse($tpl->getSource()->exists);
+        $this->assertFalse($tpl->source->exists);
     }
 
+    /**
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     *
+     */
     public function testCase1()
     {
-        $resource_handler = new Smarty_Resource_AmbiguousPlugin(__DIR__ . '/templates/ambiguous/');
+        $resource_handler = new Smarty_Resource_Ambiguous(__DIR__ . '/templates/ambiguous/');
         $this->smarty->registerResource('ambiguous', $resource_handler);
         $this->smarty->setDefaultResourceType('ambiguous');
-//        $this->smarty->setAllowAmbiguousResources(true);
+        $this->smarty->setAllowAmbiguousResources(true);
 
         $resource_handler->setSegment('case1');
 
         $tpl = $this->smarty->createTemplate('foobar.tpl');
-        $this->assertTrue($tpl->getSource()->exists);
-        $this->assertEquals('case1', $tpl->getSource()->getContent());
+        $this->assertTrue($tpl->source->exists);
+        $this->assertEquals('case1', $tpl->source->getContent());
     }
 
+    /**
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     *
+     */
     public function testCase2()
     {
-        $resource_handler = new Smarty_Resource_AmbiguousPlugin(__DIR__ . '/templates/ambiguous/');
+        $resource_handler = new Smarty_Resource_Ambiguous(__DIR__ . '/templates/ambiguous/');
         $this->smarty->registerResource('ambiguous', $resource_handler);
         $this->smarty->setDefaultResourceType('ambiguous');
-//        $this->smarty->setAllowAmbiguousResources(true);
+        $this->smarty->setAllowAmbiguousResources(true);
 
         $resource_handler->setSegment('case2');
 
         $tpl = $this->smarty->createTemplate('foobar.tpl');
-        $this->assertTrue($tpl->getSource()->exists);
-        $this->assertEquals('case2', $tpl->getSource()->getContent());
+        $this->assertTrue($tpl->source->exists);
+        $this->assertEquals('case2', $tpl->source->getContent());
     }
 
-
+    /**
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     *
+     */
     public function testCaseSwitching()
     {
-        $resource_handler = new Smarty_Resource_AmbiguousPlugin(__DIR__ . '/templates/ambiguous/');
+        $resource_handler = new Smarty_Resource_Ambiguous(__DIR__ . '/templates/ambiguous/');
         $this->smarty->registerResource('ambiguous', $resource_handler);
         $this->smarty->setDefaultResourceType('ambiguous');
-//        $this->smarty->setAllowAmbiguousResources(true);
+        $this->smarty->setAllowAmbiguousResources(true);
 
         $resource_handler->setSegment('case1');
         $tpl = $this->smarty->createTemplate('foobar.tpl');
-        $this->assertTrue($tpl->getSource()->exists);
-        $this->assertEquals('case1', $tpl->getSource()->getContent());
+        $this->assertTrue($tpl->source->exists);
+        $this->assertEquals('case1', $tpl->source->getContent());
 
         $resource_handler->setSegment('case2');
         $tpl = $this->smarty->createTemplate('foobar.tpl');
-        $this->assertTrue($tpl->getSource()->exists);
-        $this->assertEquals('case2', $tpl->getSource()->getContent());
+        $this->assertTrue($tpl->source->exists);
+        $this->assertEquals('case2', $tpl->source->getContent());
     }
 }

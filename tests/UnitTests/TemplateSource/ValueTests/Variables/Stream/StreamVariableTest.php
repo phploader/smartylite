@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests stream variables
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for stream variables tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class StreamVariableTest extends PHPUnit_Smarty
 {
@@ -26,6 +26,10 @@ class StreamVariableTest extends PHPUnit_Smarty
         fclose($fp);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     protected function tearDown(): void
     {

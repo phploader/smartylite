@@ -2,29 +2,36 @@
 /**
  * Smarty PHPunit tests compilation of strip tags
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for strip tags tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- * 
+ * @backupStaticAttributes enabled
  */
 class CompileStripTest extends PHPUnit_Smarty
 {
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addPluginsDir("../../../__shared/PHPunitplugins/");
+        $this->smarty->addTemplateDir("./templates_tmp");
+    }
+
+    public function testInit()
+    {
+        $this->cleanDirs();
     }
 
     /**
      * Test {strip} tags
      *
      * @not                 runInSeparateProcess
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestStrip
      */
     public function testStrip($code, $result, $testName, $testNumber)

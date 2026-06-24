@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests deault plugin handler
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for plugin handler tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class DefaultPluginHandlerTest extends PHPUnit_Smarty
 {
@@ -24,6 +24,10 @@ class DefaultPluginHandlerTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     public function testDefaultFunctionScript()
     {
         $this->assertEquals("scriptfunction foo bar", $this->smarty->fetch('test_default_function_script.tpl'));
@@ -92,7 +96,7 @@ class DefaultPluginHandlerTest extends PHPUnit_Smarty
 function my_plugin_handler($tag, $type, $template, &$callback, &$script, &$cachable)
 {
     switch ($type) {
-        case \Smarty\Smarty::PLUGIN_FUNCTION:
+        case Smarty::PLUGIN_FUNCTION:
             switch ($tag) {
                 case 'scriptfunction':
                     $script = './scripts/script_function_tag.php';
@@ -112,7 +116,7 @@ function my_plugin_handler($tag, $type, $template, &$callback, &$script, &$cacha
                 default:
                     return false;
             }
-        case \Smarty\Smarty::PLUGIN_COMPILER:
+        case Smarty::PLUGIN_COMPILER:
             switch ($tag) {
                 case 'scriptcompilerfunction':
                     $script = './scripts/script_compiler_function_tag.php';
@@ -124,7 +128,7 @@ function my_plugin_handler($tag, $type, $template, &$callback, &$script, &$cacha
                 default:
                     return false;
             }
-        case \Smarty\Smarty::PLUGIN_BLOCK:
+        case Smarty::PLUGIN_BLOCK:
             switch ($tag) {
                 case 'scriptblock':
                     $script = './scripts/script_block_tag.php';
@@ -134,7 +138,7 @@ function my_plugin_handler($tag, $type, $template, &$callback, &$script, &$cacha
                 default:
                     return false;
             }
-        case \Smarty\Smarty::PLUGIN_MODIFIER:
+        case Smarty::PLUGIN_MODIFIER:
             switch ($tag) {
                 case 'scriptmodifier':
                     $script = './scripts/script_modifier.php';

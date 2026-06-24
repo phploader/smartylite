@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests append method
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for append tests
  *
- * 
- * 
- *
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class AppendTest extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class AppendTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test append
      */

@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests compilation of {section} tag
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {section} tag tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CompileSectionTest extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class CompileSectionTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test {section} tag
      */
@@ -61,15 +65,16 @@ class CompileSectionTest extends PHPUnit_Smarty
     /**
      * Test spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', array(1,2));
         $this->assertEquals($result,
                             $this->smarty->fetch($file),
@@ -104,15 +109,16 @@ class CompileSectionTest extends PHPUnit_Smarty
     /**
      * Test spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestElseSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testElseSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_Else_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', array());
         $this->smarty->assign('bar', 'bar');
         $this->assertEquals($result,
@@ -142,10 +148,37 @@ class CompileSectionTest extends PHPUnit_Smarty
         );
     }
 
-    public function testSectionWithNocache()
-    {
-        $source = 'string:{section name=module start=0 loop=1 nocache}{/section}';
-        $this->assertEquals('', $this->smarty->fetch($source));
-    }
+	public function testNestedArrayAsLoopParameter()
+	{
+		$data = [
+			['name' => 'John Smith', 'home' => '555-555-5555',
+				'cell' => '666-555-5555', 'email' => 'john@myexample.com'],
+			['name' => 'Jack Jones', 'home' => '777-555-5555',
+				'cell' => '888-555-5555', 'email' => 'jack@myexample.com'],
+			['name' => 'Jane Munson', 'home' => '000-555-5555',
+				'cell' => '123456', 'email' => 'jane@myexample.com']
+		];
+		$this->smarty->assign('contacts',$data);
+		$result = $this->smarty->fetch('string:{section name=customer loop=$contacts}
+name: {$contacts[customer].name}
+home: {$contacts[customer].home}
+cell: {$contacts[customer].cell}
+e-mail: {$contacts[customer].email}
+{/section}');
+		$this->assertEquals('name: John Smith
+home: 555-555-5555
+cell: 666-555-5555
+e-mail: john@myexample.com
+name: Jack Jones
+home: 777-555-5555
+cell: 888-555-5555
+e-mail: jack@myexample.com
+name: Jane Munson
+home: 000-555-5555
+cell: 123456
+e-mail: jane@myexample.com
+', $result);
+
+	}
 
 }

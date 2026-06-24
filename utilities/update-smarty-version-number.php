@@ -2,7 +2,7 @@
 
 // This takes the Smarty class file and updates the SMARTY_VERSION constant
 
-$path_to_smarty_class = 'src/Smarty.php';
+$path_to_smarty_class = 'libs/Smarty.class.php';
 $pattern = "/const SMARTY_VERSION = '[^']+'/";
 $replacement = "const SMARTY_VERSION = '" . $argv[1] . "'";
 

@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests {$smarty.post.foo}
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {$smarty.post.foo} tests
  *
- *
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class PostTest extends PHPUnit_Smarty
 {
@@ -20,11 +20,15 @@ class PostTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test $_POST
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider dataProvider
      */
     public function testPost($caching, $value) {
@@ -36,8 +40,8 @@ class PostTest extends PHPUnit_Smarty
     /**
      * test $_POST with modifier
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider dataProviderModifier
      */
     public function testPostModifier($caching, $value, $result) {

@@ -4,7 +4,7 @@
         bootstrap="tests/Bootstrap.php"
         colors="true"
         backupGlobals="false"
-        backupStaticAttributes="false"
+        backupStaticAttributes="true"
         forceCoversAnnotation="false"
         processIsolation="false"
         stopOnError="false"
@@ -15,11 +15,16 @@
         timeoutForSmallTests="1"
         timeoutForMediumTests="10"
         timeoutForLargeTests="60"
-        verbose="false">
+        verbose="false"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        convertDeprecationsToExceptions="true">
     <testsuites>
         <testsuite name="foo">
             <directory>./tests/UnitTests/</directory>
             <exclude>./tests/UnitTests/CacheResourceTests/Memcache/CacheResourceCustomMemcacheTest.php</exclude>
+            <exclude>./tests/UnitTests/CacheResourceTests/Apc/CacheResourceCustomApcTest.php</exclude>
             <exclude>./tests/UnitTests/CacheModify/ModifiedSince/HttpModifiedSinceTest.php</exclude>
         </testsuite>
     </testsuites>

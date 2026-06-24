@@ -2,29 +2,36 @@
 /**
  * Smarty PHPunit tests compilation of capture tags
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for capture tags tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CompileCaptureTest extends PHPUnit_Smarty
 {
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addTemplateDir("./templates_tmp");
+    }
+
+
+    public function testInit()
+    {
+        $this->cleanDirs();
     }
 
     /**
      * Test capture tags
      *
      * @not                 runInSeparateProcess
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestCapture
      */
     public function testCapture($code, $result, $testName, $testNumber)
@@ -76,8 +83,8 @@ class CompileCaptureTest extends PHPUnit_Smarty
 
     /**
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testCompileCaptureNocache2()
@@ -100,15 +107,16 @@ class CompileCaptureTest extends PHPUnit_Smarty
     /**
      * Test spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 'bar');
         $this->assertEquals($result,
                             $this->smarty->fetch($file),

@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests compiler errors
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for compiler tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- *
+ * @backupStaticAttributes enabled
  *
  * Short syntax of  section properties did not work
  */
@@ -22,6 +22,10 @@ class SectionPropertiesShortSyntaxIssue428Test extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     public function testSection_001()
     {

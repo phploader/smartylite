@@ -1,23 +1,19 @@
 <?php
 
-use Smarty\Resource\FilePlugin;
-use Smarty\Template;
-use Smarty\Template\Source;
-
-class Smarty_Resource_FiletestPlugin extends FilePlugin
+class Smarty_Resource_Filetest extends Smarty_Internal_Resource_File
 {
     /**
-     * populate Source Object with metadata from Resource
+     * populate Source Object with meta data from Resource
      *
-     * @param Source   $source    source object
-     * @param Template $_template template object
+     * @param Smarty_Template_Source        $source    source object
+     * @param Smarty_Internal_Template|null $_template template object
      */
-    public function populate(Source $source, ?Template $_template = null)
+    public function populate(Smarty_Template_Source $source, ?Smarty_Internal_Template $_template = null)
     {
         parent::populate($source, $_template);
         if ($source->exists) {
-            if (isset(CacheResourceTestCommon::$touchResource[$source->getResourceName()])) {
-                $source->timestamp = CacheResourceTestCommon::$touchResource[$source->getResourceName()];
+            if (isset(CacheResourceTestCommon::$touchResource[$source->filepath])) {
+                $source->timestamp = CacheResourceTestCommon::$touchResource[$source->filepath];
             }
         }
     }

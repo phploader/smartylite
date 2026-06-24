@@ -1,11 +1,11 @@
 <?php
 
 
-class Smarty_CacheResource_Filetest extends \Smarty\Cacheresource\File
+class Smarty_CacheResource_Filetest extends Smarty_Internal_CacheResource_File
 {
     public $lockTime = 0;
 
-    public function hasLock(\Smarty\Smarty $smarty, \Smarty\Template\Cached $cached)
+    public function hasLock(Smarty $smarty, Smarty_Template_Cached $cached)
     {
         if ($this->lockTime) {
             $this->lockTime--;

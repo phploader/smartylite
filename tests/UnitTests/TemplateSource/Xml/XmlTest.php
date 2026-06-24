@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests  of the <?xml...> tag handling
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for <?xml...> tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class XmlTest extends PHPUnit_Smarty
 {
@@ -23,6 +23,10 @@ class XmlTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test standard xml
      */

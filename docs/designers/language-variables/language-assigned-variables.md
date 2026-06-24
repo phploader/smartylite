@@ -7,7 +7,7 @@ Variables assigned from PHP are referenced by preceding them with a dollar
 
 ```php
 <?php
-use Smarty\Smarty;
+
 $smarty = new Smarty();
 
 $smarty->assign('firstname', 'Doug');
@@ -110,7 +110,7 @@ zaphod@slartibartfast.example.com<br />
 
 ## Objects
 
-Properties of [objects](../../api/variables/objects.md) assigned from PHP
+Properties of [objects](../../programmers/advanced-features/advanced-features-objects.md) assigned from PHP
 can be referenced by specifying the property name after the `->` symbol.
 
 ```smarty
@@ -124,88 +124,3 @@ this will output:
 name:  Zaphod Beeblebrox<br />
 email: zaphod@slartibartfast.example.com<br />
 ```
-
-## Backed Enums (PHP 8.1+)
-
-Smarty supports accessing properties of [backed enums](https://www.php.net/manual/en/language.enumerations.backed.php) introduced in PHP 8.1.
-
-### Accessing Enum Properties
-
-You can access the `name` and `value` properties of backed enum cases:
-
-```smarty
-{* Access enum case properties *}
-<option id="{MyEnum::Foo->name}">{MyEnum::Foo->value}</option>
-```
-
-### Complete Example
-
-```php
-<?php
-use Smarty\Smarty;
-
-// Define a backed enum
-enum Status: string {
-    case Active = 'active';
-    case Inactive = 'inactive';
-    case Pending = 'pending';
-}
-
-$smarty = new Smarty();
-$smarty->assign('currentStatus', Status::Active);
-$smarty->display('template.tpl');
-```
-
-`template.tpl`:
-
-```smarty
-{* Display enum properties *}
-Current status: {$currentStatus->name} (value: {$currentStatus->value})
-
-{* Use in HTML attributes *}
-<select name="status">
-    <option value="{Status::Active->value}" {if $currentStatus->name === 'Active'}selected{/if}>Active</option>
-    <option value="{Status::Inactive->value}" {if $currentStatus->name === 'Inactive'}selected{/if}>Inactive</option>
-    <option value="{Status::Pending->value}" {if $currentStatus->name === 'Pending'}selected{/if}>Pending</option>
-</select>
-```
-
-This would output:
-
-```html
-Current status: Active (value: active)
-
-<select name="status">
-    <option value="active" selected>Active</option>
-    <option value="inactive">Inactive</option>
-    <option value="pending">Pending</option>
-</select>
-```
-
-### Integer-backed Enums
-
-Integer-backed enums work the same way:
-
-```php
-<?php
-enum Priority: int {
-    case Low = 1;
-    case Medium = 2; 
-    case High = 3;
-}
-
-$smarty->assign('priority', Priority::High);
-```
-
-```smarty
-{* Access integer enum properties *}
-Priority level: {$priority->value} ({$priority->name})
-```
-
-Output:
-
-```html
-Priority level: 3 (High)
-```
-
-> **Note**: Backed enum support requires PHP 8.1 or higher. The enum must be registered or available in the current namespace.

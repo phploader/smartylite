@@ -2,24 +2,32 @@
 /**
  * Smarty PHPunit tests of delimiter
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for delimiter tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class UserliteralTest extends PHPUnit_Smarty
 {
     public function setUp(): void
     {
-        $this->setUpSmarty(__DIR__);
+        if (!property_exists('Smarty', 'literals')) {
+            $this->markTestSkipped('user literal support');
+        } else {
+            $this->setUpSmarty(__DIR__);
+        }
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     public function testUserLiteral()
     {

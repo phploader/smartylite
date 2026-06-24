@@ -8,10 +8,12 @@
  */
 require_once __DIR__ . '/Config.php';
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../libs/bootstrap.php';
 
 require_once 'PHPUnit_Smarty.php';
 if (!ini_get('date.timezone')) {
     ini_set('date.timezone', 'Europe/Berlin');
 }
+
 
 

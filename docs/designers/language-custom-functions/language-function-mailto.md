@@ -24,14 +24,6 @@ spiders to lift email addresses off of a site.
 > you can use hex encoding too.
 
 
-> **Security note**
->
-> The `extra` attribute is written into the generated `<a>` tag without escaping,
-> so that you can add attributes such as `extra='class="mailto"'`. If you pass a
-> value that originates from untrusted input, escape it yourself first (e.g. with
-> the [`escape`](../language-modifiers/language-modifier-escape.md) modifier) to
-> avoid cross-site scripting (XSS).
-
 ## Examples
 
 ```smarty
@@ -42,7 +34,7 @@ spiders to lift email addresses off of a site.
 <a href="mailto:me@example.com" >send me some mail</a>
 
 {mailto address="me@example.com" encode="javascript"}
-    <script>
+<script type="text/javascript" language="javascript">
    eval(unescape('%64%6f% ... snipped ...%61%3e%27%29%3b'))
 </script>
 
@@ -59,7 +51,7 @@ spiders to lift email addresses off of a site.
 <a href="mailto:me@example.com" class="email">me@example.com</a>
 
 {mailto address="me@example.com" encode="javascript_charcode"}
-    <script>
+<script type="text/javascript" language="javascript">
     {document.write(String.fromCharCode(60,97, ... snipped ....60,47,97,62))}
 </script>
 ```

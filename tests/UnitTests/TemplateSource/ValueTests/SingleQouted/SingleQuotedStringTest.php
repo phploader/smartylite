@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests single quoted strings
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for single quoted string tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class SingleQuotedStringTest extends PHPUnit_Smarty
 {
@@ -20,6 +20,10 @@ class SingleQuotedStringTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
      * test simple single quoted string

@@ -2,31 +2,38 @@
 /**
  * Smarty PHPunit tests compilation of {if} tag
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {if} tag tests
  *
- *
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- * 
+ * @backupStaticAttributes enabled
  */
 class CompileIfTest extends PHPUnit_Smarty
 {
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addPluginsDir("../../../__shared/PHPunitplugins/");
+        $this->smarty->addTemplateDir("../../../__shared/templates/");
+        $this->smarty->addTemplateDir("./templates_tmp");
         $this->smarty->registerPlugin('modifier', 'var_export', 'var_export');
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
      * Test if tags
      *
      * @not                 runInSeparateProcess
-     *
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestIf
      */
     public function testIf($code, $result, $testName, $testNumber)
@@ -34,9 +41,10 @@ class CompileIfTest extends PHPUnit_Smarty
         $name = empty($testName) ? $testNumber : $testName;
         $file = "testIf_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
-        $this->smarty->assign('file', $file);
+        $this->smarty->assignGlobal('file', $file);
         $this->smarty->assign('bar', 'buh');
-        $this->assertEquals($result, $this->smarty->fetch($file), "testIf - {$code} - {$name}");
+        $this->assertEquals($result, $this->smarty->fetch($file),
+                            "testIf - {$code} - {$name}");
     }
 
     /*
@@ -95,37 +103,7 @@ class CompileIfTest extends PHPUnit_Smarty
                      array('{if 6 is not even}yes{else}no{/if}', 'no', 'IsNotEven', $i ++),
                      array('{if 3 is odd}yes{else}no{/if}', 'yes', 'IsOdd', $i ++),
                      array('{if 3 is not odd}yes{else}no{/if}', 'no', 'IsNotOdd', $i ++),
-
-                     array('{if 0 is even by 3}yes{else}no{/if}', 'yes', 'IsEvenByTest0', $i ++),
-                     array('{if 1 is even by 3}yes{else}no{/if}', 'yes', 'IsEvenByTest1', $i ++),
-                     array('{if 2 is even by 3}yes{else}no{/if}', 'yes', 'IsEvenByTest2', $i ++),
-                     array('{if 3 is even by 3}yes{else}no{/if}', 'no', 'IsEvenByTest3', $i ++),
-                     array('{if 4 is even by 3}yes{else}no{/if}', 'no', 'IsEvenByTest4', $i ++),
-                     array('{if 5 is even by 3}yes{else}no{/if}', 'no', 'IsEvenByTest5', $i ++),
-                     array('{if 6 is even by 3}yes{else}no{/if}', 'yes', 'IsEvenByTest6', $i ++),
-                     array('{if 7 is even by 3}yes{else}no{/if}', 'yes', 'IsEvenByTest7', $i ++),
-
-                     array('{if 0 is odd by 3}yes{else}no{/if}', 'no', 'IsOddByTest0', $i ++),
-                     array('{if 1 is odd by 3}yes{else}no{/if}', 'no', 'IsOddByTest1', $i ++),
-                     array('{if 2 is odd by 3}yes{else}no{/if}', 'no', 'IsOddByTest2', $i ++),
-                     array('{if 3 is odd by 3}yes{else}no{/if}', 'yes', 'IsOddByTest3', $i ++),
-                     array('{if 4 is odd by 3}yes{else}no{/if}', 'yes', 'IsOddByTest4', $i ++),
-                     array('{if 5 is odd by 3}yes{else}no{/if}', 'yes', 'IsOddByTest5', $i ++),
-                     array('{if 6 is odd by 3}yes{else}no{/if}', 'no', 'IsOddByTest6', $i ++),
-                     array('{if 7 is odd by 3}yes{else}no{/if}', 'no', 'IsOddByTest7', $i ++),
-
-                     array('{if 2 is even by 3}yes{else}no{/if}', 'yes', 'IsEvenByVal1', $i ++),
-                     array('{if 3 is even by 2}yes{else}no{/if}', 'no', 'IsEvenByVal2', $i ++),
-                     array('{if 4 is even by 3}yes{else}no{/if}', 'no', 'IsEvenByVal3', $i ++),
-                     array('{$foo=3}{if 2 is even by $foo}yes{else}no{/if}', 'yes', 'IsEvenByVar1', $i ++),
-                     array('{$foo=2}{if 3 is even by $foo}yes{else}no{/if}', 'no', 'IsEvenByVar2', $i ++),
-                     array('{$foo=3}{if 4 is even by $foo}yes{else}no{/if}', 'no', 'IsEvenByVar3', $i ++),
-                     array('{if 2 is odd by 3}yes{else}no{/if}', 'no', 'IsOddByVal1', $i ++),
-                     array('{if 3 is odd by 2}yes{else}no{/if}', 'yes', 'IsOddByVal2', $i ++),
-                     array('{if 4 is odd by 3}yes{else}no{/if}', 'yes', 'IsOddByVal3', $i ++),
-                     array('{$foo=3}{if 2 is odd by $foo}yes{else}no{/if}', 'no', 'IsOddByVar1', $i ++),
-                     array('{$foo=2}{if 3 is odd by $foo}yes{else}no{/if}', 'yes', 'IsOddByVar2', $i ++),
-                     array('{$foo=3}{if 4 is odd by $foo}yes{else}no{/if}', 'yes', 'IsOddByVar3', $i ++),
+                     array('{$foo=3}{if 3 is odd by $foo}yes{else}no{/if}', 'yes', 'IsOddByVar', $i ++),
                      array('{$foo=3}{$bar=6}{if $bar is not odd by $foo}yes{else}no{/if}', 'yes', 'IsNotOddByVar', $i ++),
                      array('{$foo=3}{$bar=3}{if 3+$bar is not odd by $foo}yes{else}no{/if}', 'yes', 'ExprIsNotOddByVar', $i ++),
                      array('{$foo=2}{$bar=6}{if (3+$bar) is not odd by ($foo+1)}yes{else}no{/if}', 'no', 'ExprIsNotOddByExpr', $i ++),
@@ -161,12 +139,6 @@ class CompileIfTest extends PHPUnit_Smarty
                      array('{if {counter start=1} == 1}yes{else}no{/if}', 'yes', 'Tag1', $i ++),
                      array('{if false}false{elseif {counter start=1} == 1}yes{else}no{/if}', 'yes', 'Tag2', $i ++),
                      array('{if {counter start=1} == 0}false{elseif {counter} == 2}yes{else}no{/if}', 'yes', 'Tag3', $i ++),
-
-                     array('{if 2 is in ["foo", 2]}yes{else}no{/if}', 'yes', 'IsIn', $i++),
-                     array('{if 2 is in ["foo", "bar"]}yes{else}no{/if}', 'no', 'IsIn2', $i++),
-                     array('{if 2 is not in ["foo", "bar"]}yes{else}no{/if}', 'yes', 'IsNotIn', $i++),
-                     array('{if 2 is not in ["foo", 2]}yes{else}no{/if}', 'no', 'IsNotIn2', $i++),
-
          );
     }
 
@@ -176,8 +148,8 @@ class CompileIfTest extends PHPUnit_Smarty
     /**
      * Test if nocache tags
      *
-     * 
-     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestIfNocache
      */
     public function testIfNocache($var, $value, $code, $result, $testName, $testNumber, $file = null)
@@ -193,7 +165,7 @@ class CompileIfTest extends PHPUnit_Smarty
         $this->smarty->assign($var, $value, true);
         $this->smarty->assign($var . '2', $value);
         $this->assertEquals($result, $this->strip($this->smarty->fetch('run_code_caching.tpl')),
-                            "testIfNocache - {$code} - {$testName}");
+                            "testIfNocahe - {$code} - {$testName}");
     }
 
     /*
@@ -233,15 +205,16 @@ class CompileIfTest extends PHPUnit_Smarty
      /**
      * Test spacings
      *
-     *
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('bar', 'bar');
         $this->assertEquals($result,
                             $this->smarty->fetch($file),

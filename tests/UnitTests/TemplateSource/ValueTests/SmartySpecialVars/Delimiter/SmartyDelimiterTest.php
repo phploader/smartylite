@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests {$smarty.ldelim} {$smarty.rdelim}
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {$smarty.ldelim} {$smarty.rdelim} tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class SmartyDelimiterTest extends PHPUnit_Smarty
 {
@@ -20,6 +20,10 @@ class SmartyDelimiterTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test {$smarty.ldelim} {$smarty.rdelim}
      *

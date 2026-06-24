@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests {$smarty.version}
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {$smarty.version} tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class SmartyVersionTest extends PHPUnit_Smarty
 {
@@ -20,11 +20,15 @@ class SmartyVersionTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test {$smarty.version}
      *
      */
     public function testSmartyVersion() {
-        $this->assertEquals(\Smarty\Smarty::SMARTY_VERSION, $this->smarty->fetch('version.tpl'));
+        $this->assertEquals(Smarty::SMARTY_VERSION, $this->smarty->fetch('version.tpl'));
     }
  }

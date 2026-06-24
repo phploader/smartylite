@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests compilation of {nocache} tag
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {nocache} tag tests
  *
- * 
- * 
- *
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CompileNocacheTest extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class CompileNocacheTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test nocache tag caching disabled
      */
@@ -55,8 +59,8 @@ class CompileNocacheTest extends PHPUnit_Smarty
 
     /**
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      */
     public function testNocacheCachingYes2()

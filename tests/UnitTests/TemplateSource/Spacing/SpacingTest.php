@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests spacing in template output
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for spacing test
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- * 
+ * @backupStaticAttributes enabled
  */
 class SpacingTest extends PHPUnit_Smarty
 {
@@ -20,19 +20,24 @@ class SpacingTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
      * Test spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->template_dir = './templates_tmp';
         $this->smarty->assign('file', $file);
         $this->smarty->assign('foo', 'bar');
         $this->assertEquals($result,

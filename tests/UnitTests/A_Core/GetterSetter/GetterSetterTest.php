@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests of generic getter/setter
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for generic getter/setter tests
  *
- *
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class GetterSetterTest extends PHPUnit_Smarty
 {
@@ -20,6 +20,10 @@ class GetterSetterTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
      * test setter on Smarty object
@@ -28,8 +32,8 @@ class GetterSetterTest extends PHPUnit_Smarty
     {
         $this->smarty->setLeftDelimiter('<{');
         $this->smarty->setRightDelimiter('}>');
-        $this->assertEquals('<{', $this->smarty->getLeftDelimiter());
-        $this->assertEquals('}>', $this->smarty->getRightDelimiter());
+        $this->assertEquals('<{', $this->smarty->left_delimiter);
+        $this->assertEquals('}>', $this->smarty->right_delimiter);
     }
 
     /**
@@ -51,10 +55,10 @@ class GetterSetterTest extends PHPUnit_Smarty
         $tpl = $this->smarty->createTemplate('helloworld.tpl');
         $tpl->setLeftDelimiter('<{');
         $tpl->setRightDelimiter('}>');
-        $this->assertEquals('<{', $tpl->getLeftDelimiter());
-        $this->assertEquals('}>', $tpl->getRightDelimiter());
-        $this->assertEquals('{', $this->smarty->getLeftDelimiter());
-        $this->assertEquals('}', $this->smarty->getRightDelimiter());
+        $this->assertEquals('<{', $tpl->smarty->left_delimiter);
+        $this->assertEquals('}>', $tpl->smarty->right_delimiter);
+        $this->assertEquals('{', $this->smarty->left_delimiter);
+        $this->assertEquals('}', $this->smarty->right_delimiter);
     }
 
     /**

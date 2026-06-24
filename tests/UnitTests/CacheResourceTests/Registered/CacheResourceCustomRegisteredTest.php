@@ -2,7 +2,7 @@
 /**
  * Smarty PHPunit tests for cache resource registered
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 if (MysqlCacheEnable == true) {
@@ -11,9 +11,9 @@ if (MysqlCacheEnable == true) {
     /**
      * class for cache resource file tests
      *
-     * 
+     * @runTestsInSeparateProcess
      * @preserveGlobalState    disabled
-     * 
+     * @backupStaticAttributes enabled
      */
     class CacheResourceCustomRegisteredTest extends CacheResourceTestCommon
     {
@@ -26,7 +26,6 @@ if (MysqlCacheEnable == true) {
                 $this->getConnection();
             }
             $this->setUpSmarty(__DIR__);
-            $this->initMysqlCache();
             parent::setUp();
             if (!class_exists('Smarty_CacheResource_Mysqltest', false)) {
                 require_once(__DIR__ . "/../_shared/PHPunitplugins/cacheresource.mysqltest.php");
@@ -35,6 +34,11 @@ if (MysqlCacheEnable == true) {
             $this->smarty->registerCacheResource('foobar', new Smarty_CacheResource_Mysqltest());
         }
 
+        public function testInit()
+        {
+            $this->cleanDirs();
+            $this->initMysqlCache();
+        }
     }
 }
 

@@ -2,31 +2,38 @@
 /**
  * Smarty PHPunit tests compilation of assign tags
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for assign tags tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- *
+ * @backupStaticAttributes enabled
  */
 class CompileAssignTest extends PHPUnit_Smarty
 {
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addPluginsDir("../../../__shared/PHPunitplugins/");
+        $this->smarty->addTemplateDir("../../../__shared/templates/");
+        $this->smarty->addTemplateDir("./templates_tmp");
         $this->smarty->registerPlugin('modifier', 'var_export', 'var_export');
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
      * Test assign tags
      *
      * @not                 runInSeparateProcess
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestAssign
      */
     public function testAssign($code, $result, $testName, $testNumber)
@@ -86,15 +93,16 @@ class CompileAssignTest extends PHPUnit_Smarty
     /**
      * Test Assign spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testAssignSpacing($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Spacing_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 'bar');
         $this->assertEquals($result,
                             $this->smarty->fetch($file),
@@ -103,9 +111,9 @@ class CompileAssignTest extends PHPUnit_Smarty
     /**
      * Test Output nocache spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testAssignSpacingNocache($code, $result, $testName, $testNumber)
     {
@@ -113,6 +121,7 @@ class CompileAssignTest extends PHPUnit_Smarty
         $file = "Spacing_{$name}.tpl";
         $this->smarty->setCompileId('1');
         $this->smarty->setCaching(1);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 'bar',true);
         $this->assertEquals($result,
                             $this->smarty->fetch($file),
@@ -121,9 +130,9 @@ class CompileAssignTest extends PHPUnit_Smarty
     /**
      * Test Output nocache spacings
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestSpacing
-     * 
+     * @runInSeparateProcess
      */
     public function testAssignSpacingNocache2($code, $result, $testName, $testNumber)
     {
@@ -131,6 +140,7 @@ class CompileAssignTest extends PHPUnit_Smarty
         $file = "Spacing_{$name}.tpl";
         $this->smarty->setCompileId('1');
         $this->smarty->setCaching(1);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 'foo',true);
         $this->assertEquals(str_replace('bar','foo',$result),
                             $this->smarty->fetch($file),

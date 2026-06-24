@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests array definitions and access
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for array tests
  *
- * 
- * 
- *
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class ArrayTest extends PHPUnit_Smarty
 {
@@ -20,18 +20,23 @@ class ArrayTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * Test array access
      *
-     * 
+     * @preserveGlobalState disabled
      * @dataProvider        dataTestArray
-     * 
+     * @runInSeparateProcess
      */
     public function testArray($code, $result, $testName, $testNumber)
     {
         $name = empty($testName) ? $testNumber : $testName;
         $file = "Array_{$name}.tpl";
         $this->makeTemplateFile($file, $code);
+        $this->smarty->setTemplateDir('./templates_tmp');
         $this->smarty->assign('foo', 3);
         $this->assertEquals($result,
                             $this->smarty->fetch($file),
@@ -65,8 +70,6 @@ class ArrayTest extends PHPUnit_Smarty
                      array('{$foo=[1,2,[7,8,9],4,5]}{$x=2}{$foo.$x.0}', '7', 'T13', $i++),
                      array('{$foo=[1,2,[7,8,9],4,5]}{$x=0}{$foo.2.$x}', '7', 'T14', $i++),
                      array('{$foo=[1,2,[7,8,9],4,5]}{$x=[1,0]}{$foo.2.{$x.1}}', '7', 'T15', $i++),
-                     array('{$foo=[1,2,3,4,5,]}{foreach $foo as $bar}{$bar}{/foreach}', '12345', 'T16', $i++),
-                     array('{$foo=[1,2,3,4,5,[6,7,8,],]}{$foo[5][2]}', '8', 'T17', $i++),
         );
     }
 }

@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests {$smarty.now}
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for {$smarty.now} tests
  *
- * 
- * 
- *
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class SmartyNowTest extends PHPUnit_Smarty
 {
@@ -20,6 +20,10 @@ class SmartyNowTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test {$smarty.now}
      *

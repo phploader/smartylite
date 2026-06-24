@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests {$smarty.cookies.foo}
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for $smarty.cookies.foo} tests
  *
- *
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class CookieTest extends PHPUnit_Smarty
 {
@@ -20,11 +20,15 @@ class CookieTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
     /**
      * test cookies
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider dataProvider
      */
     public function testCookie($caching, $value) {
@@ -45,8 +49,8 @@ class CookieTest extends PHPUnit_Smarty
     /**
      * test cookies with modifier
      *
-     * 
-     * 
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @dataProvider dataProviderModifier
      */
     public function testCookieModifier($caching, $value, $result) {

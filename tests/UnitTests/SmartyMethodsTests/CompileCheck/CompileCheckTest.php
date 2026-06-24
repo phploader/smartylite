@@ -4,9 +4,11 @@
  */
 class CompileCheckTest extends PHPUnit_Smarty
 {
+    public $methodName = null;
     public function setUp(): void
     {
         $this->setUpSmarty(__DIR__);
+        $this->smarty->addTemplateDir('./templates_tmp');
         $this->cleanDirs();
     }
 
@@ -15,18 +17,18 @@ class CompileCheckTest extends PHPUnit_Smarty
      */
     protected function makeFiles()
     {
-		$this->makeTemplateFile('t1.tpl', 'TPL1');
-		$this->makeTemplateFile('t2.tpl', 'TPL2');
-		$this->makeTemplateFile('base.tpl', '{include file="t1.tpl"}{include file="t2.tpl"}');
+        file_put_contents('./templates_tmp/t1.tpl', 'TPL1');
+        file_put_contents('./templates_tmp/t2.tpl', 'TPL2');
+        file_put_contents('./templates_tmp/base.tpl', '{include file="t1.tpl"}{include file="t2.tpl"}');
     }
     /**
      * remove generated templates
      */
     protected function removeFiles()
     {
-		$this->removeTemplateFile('t1.tpl');
-		$this->removeTemplateFile('t2.tpl');
-		$this->removeTemplateFile('base.tpl');
+        unlink('./templates_tmp/t1.tpl');
+        unlink('./templates_tmp/t2.tpl');
+        unlink('./templates_tmp/base.tpl');
     }
 
     /**
@@ -34,7 +36,8 @@ class CompileCheckTest extends PHPUnit_Smarty
      * @return void
      */
     private function softResetSmarty() {
-		$this->setUpSmarty(__DIR__);
+        $this->smarty = new Smarty();
+        $this->smarty->addTemplateDir('./templates_tmp');
     }
 
     /**
@@ -46,7 +49,7 @@ class CompileCheckTest extends PHPUnit_Smarty
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
 
         $this->softResetSmarty();
-        $this->smarty->setCompileCheck(\Smarty\Smarty::COMPILECHECK_ON);
+        $this->smarty->setCompileCheck(Smarty::COMPILECHECK_ON);
 
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
     }
@@ -60,12 +63,12 @@ class CompileCheckTest extends PHPUnit_Smarty
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
 
         $this->softResetSmarty();
-        $this->smarty->setCompileCheck(\Smarty\Smarty::COMPILECHECK_ON);
+        $this->smarty->setCompileCheck(Smarty::COMPILECHECK_ON);
 
-		$this->removeTemplateFile('base.tpl');
+        unlink('./templates_tmp/base.tpl');
         sleep(1);
 
-        $this->expectException(\Smarty\Exception::class);
+        $this->expectException(Exception::class);
         $this->smarty->fetch('base.tpl');
     }
 
@@ -78,10 +81,10 @@ class CompileCheckTest extends PHPUnit_Smarty
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
 
         $this->softResetSmarty();
-        $this->smarty->setCompileCheck(\Smarty\Smarty::COMPILECHECK_ON);
+        $this->smarty->setCompileCheck(Smarty::COMPILECHECK_ON);
 
         sleep(1);
-		$this->makeTemplateFile('base.tpl', 'hello');
+        file_put_contents('./templates_tmp/base.tpl', 'hello');
 
         $this->assertEquals('hello', $this->smarty->fetch('base.tpl'));
     }
@@ -95,24 +98,7 @@ class CompileCheckTest extends PHPUnit_Smarty
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
 
         $this->softResetSmarty();
-        $this->smarty->setCompileCheck(\Smarty\Smarty::COMPILECHECK_OFF);
-
-        $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
-    }
-
-    /**
-     * @group slow
-     */
-    public function testCompileCheckOff1()
-    {
-        $this->makeFiles();
-        $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
-
-        $this->softResetSmarty();
-        $this->smarty->setCompileCheck(\Smarty\Smarty::COMPILECHECK_OFF);
-
-		$this->removeTemplateFile('base.tpl');
-        sleep(1);
+        $this->smarty->setCompileCheck(Smarty::COMPILECHECK_OFF);
 
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
     }
@@ -126,10 +112,10 @@ class CompileCheckTest extends PHPUnit_Smarty
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
 
         $this->softResetSmarty();
-        $this->smarty->setCompileCheck(\Smarty\Smarty::COMPILECHECK_OFF);
+        $this->smarty->setCompileCheck(Smarty::COMPILECHECK_OFF);
 
         sleep(1);
-		$this->makeTemplateFile('base.tpl', 'hello');
+        file_put_contents('./templates_tmp/base.tpl', 'hello');
 
         $this->assertEquals('TPL1TPL2', $this->smarty->fetch('base.tpl'));
     }

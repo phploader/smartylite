@@ -2,7 +2,7 @@
 /**
  * Smarty PHPunit tests for cache resource mysql
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 if (MysqlCacheEnable == true) {
@@ -12,9 +12,9 @@ if (MysqlCacheEnable == true) {
     /**
      * class for cache resource file tests
      *
-     *
+     * @runTestsInSeparateProcess
      * @preserveGlobalState    disabled
-     *
+     * @backupStaticAttributes enabled
      */
     class CacheResourceCustomMysqlTest extends CacheResourceTestCommon
     {
@@ -29,11 +29,15 @@ if (MysqlCacheEnable == true) {
                 $this->getConnection();
             }
             $this->setUpSmarty(__DIR__);
-            $this->initMysqlCache();
             parent::setUp();
             $this->smarty->setCachingType('mysqltest');
         }
 
+        public function testInit()
+        {
+            $this->cleanDirs();
+            $this->initMysqlCache();
+        }
     }
 }
 

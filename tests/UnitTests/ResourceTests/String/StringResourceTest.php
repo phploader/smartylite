@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests for string resources
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for string resource tests
  *
- * 
- * 
- * 
+ * @runTestsInSeparateProcess
+ * @preserveGlobalState disabled
+ * @backupStaticAttributes enabled
  */
 class StringResourceTest extends PHPUnit_Smarty
 {
@@ -21,6 +21,10 @@ class StringResourceTest extends PHPUnit_Smarty
     }
 
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     protected function relative($path)
     {
@@ -38,7 +42,7 @@ class StringResourceTest extends PHPUnit_Smarty
     public function testTemplateStringExists1()
     {
         $tpl = $this->smarty->createTemplate('string:{$foo}');
-        $this->assertTrue($tpl->getSource()->exists);
+        $this->assertTrue($tpl->source->exists);
     }
 
     public function testTemplateStringExists2()
@@ -52,7 +56,7 @@ class StringResourceTest extends PHPUnit_Smarty
     public function testGetTemplateFilepath()
     {
         $tpl = $this->smarty->createTemplate('string:hello world');
-        $this->assertEquals('hello world', $tpl->getSource()->getResourceName());
+        $this->assertEquals($this->buildSourcePath($tpl), $tpl->source->filepath);
     }
 
     /**
@@ -61,7 +65,7 @@ class StringResourceTest extends PHPUnit_Smarty
     public function testGetTemplateTimestamp()
     {
         $tpl = $this->smarty->createTemplate('string:hello world');
-        $this->assertTrue($tpl->getSource()->getTimeStamp());
+        $this->assertTrue($tpl->source->getTimeStamp());
     }
 
     /**
@@ -70,7 +74,16 @@ class StringResourceTest extends PHPUnit_Smarty
     public function testGetTemplateSource()
     {
         $tpl = $this->smarty->createTemplate('string:hello world{$foo}');
-        $this->assertEquals('hello world{$foo}', $tpl->getSource()->getContent());
+        $this->assertEquals('hello world{$foo}', $tpl->source->getContent());
+    }
+
+    /**
+     * test usesCompiler
+     */
+    public function testUsesCompiler()
+    {
+        $tpl = $this->smarty->createTemplate('string:hello world');
+        $this->assertFalse($tpl->source->handler->uncompiled);
     }
 
     /**
@@ -79,7 +92,7 @@ class StringResourceTest extends PHPUnit_Smarty
     public function testIsEvaluated()
     {
         $tpl = $this->smarty->createTemplate('string:hello world');
-        $this->assertFalse($tpl->getSource()->handler->recompiled);
+        $this->assertFalse($tpl->source->handler->recompiled);
     }
 
     /**
@@ -92,12 +105,21 @@ class StringResourceTest extends PHPUnit_Smarty
     }
 
     /**
+     * test getCompiledFilepath
+     */
+    public function testGetCompiledFilepath()
+    {
+        $tpl = $this->smarty->createTemplate('string:hello world');
+        $this->assertEquals($this->buildCompiledPath($tpl, false, false, null, 'hello world', 'string', $this->smarty->getTemplateDir(0)), $tpl->compiled->filepath);
+    }
+
+    /**
      * test getCompiledTimestamp
      */
     public function testGetCompiledTimestamp()
     {
         $tpl = $this->smarty->createTemplate('string:hello world');
-        $this->assertFalse($tpl->getCompiled()->getTimeStamp());
+        $this->assertFalse($tpl->compiled->getTimeStamp());
     }
 
     /**
@@ -115,7 +137,7 @@ class StringResourceTest extends PHPUnit_Smarty
     public function testGetCachedTimestamp()
     {
         $tpl = $this->smarty->createTemplate('string:hello world');
-        $this->assertFalse($tpl->getCached()->timestamp);
+        $this->assertFalse($tpl->cached->timestamp);
     }
 
     /**

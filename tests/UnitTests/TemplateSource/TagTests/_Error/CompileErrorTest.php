@@ -2,16 +2,16 @@
 /**
  * Smarty PHPunit tests compiler errors
  *
-
+ * @package PHPunit
  * @author  Uwe Tews
  */
 
 /**
  * class for compiler tests
  *
- * 
+ * @runTestsInSeparateProcess
  * @preserveGlobalState    disabled
- *
+ * @backupStaticAttributes enabled
  */
 class CompileErrorTest extends PHPUnit_Smarty
 {
@@ -20,13 +20,17 @@ class CompileErrorTest extends PHPUnit_Smarty
         $this->setUpSmarty(__DIR__);
     }
 
+    public function testInit()
+    {
+        $this->cleanDirs();
+    }
 
     /**
      * test none existing template file error
      */
     public function testNoneExistingTemplateError()
     {
-        $this->expectException(\Smarty\Exception::class);
+        $this->expectException('SmartyException');
         $this->expectExceptionMessage('no.tpl');
         $this->smarty->fetch('eval:{include file=\'no.tpl\'}');
     }
@@ -36,7 +40,7 @@ class CompileErrorTest extends PHPUnit_Smarty
      */
     public function testUnknownTagError()
     {
-        $this->expectException(\Smarty\CompilerException::class);
+        $this->expectException('SmartyCompilerException');
         $this->expectExceptionMessage('unknown tag \'unknown\'');
         $this->smarty->fetch('eval:{unknown}');
     }
@@ -46,7 +50,7 @@ class CompileErrorTest extends PHPUnit_Smarty
      */
     public function testUnclosedTagError()
     {
-        $this->expectException(\Smarty\CompilerException::class);
+        $this->expectException('SmartyCompilerException');
         $this->expectExceptionMessage('unclosed {if} tag');
         $this->smarty->fetch('eval:{if true}');
     }
@@ -56,7 +60,7 @@ class CompileErrorTest extends PHPUnit_Smarty
      */
     public function testSyntaxError()
     {
-        $this->expectException(\Smarty\CompilerException::class);
+        $this->expectException('SmartyCompilerException');
         $this->expectExceptionMessage('Unexpected "}"');
         $this->smarty->fetch('eval:{assign var=}');
     }
