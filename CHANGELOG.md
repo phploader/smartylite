@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.5.6-1] - 2025-09-02
+Fork of Smarty 4.5.6 with the following changes:
+- Removed deprecation warning for using modifiers as functions. This was causing issues in our custom fork and we have decided to remove it to maintain compatibility with existing code that relies on this behavior.
+
+
 ## [4.5.6] - 2025-08-26
 - Fixed that modifiers called like function would be compiled to modifier name instead of calling the registered callback [#1100](https://github.com/smarty-php/smarty/issues/1100)
 - Replace SMARTY_VERSION constant with $smarty.version in debug.tpl [#1073](https://github.com/smarty-php/smarty/issues/1073)

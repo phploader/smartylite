@@ -655,7 +655,9 @@ abstract class Smarty_Internal_TemplateCompilerBase
                         return $func_name . '(' . $parameter[0] . ')';
                     }
                 } else {
-
+                    
+                    // Deprecated warning removed in custom fork
+                    /*
                     if (
                         !$this->smarty->loadPlugin('smarty_modifiercompiler_' . $name)
                         && !isset($this->smarty->registered_plugins[Smarty::PLUGIN_MODIFIER][$name])
@@ -665,7 +667,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                             'removed in a future release. Use Smarty::registerPlugin to explicitly register ' .
                             'a custom modifier.', E_USER_DEPRECATED);
                     }
-
+                    */
                     return $name . '(' . implode(',', $parameter) . ')';
                 }
 
